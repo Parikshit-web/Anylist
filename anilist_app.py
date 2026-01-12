@@ -1,6 +1,14 @@
 import csv
 import os
 
+def initialize_admin():
+    if not os.path.exists("user.csv") or os.stat("user.csv").st_size == 0:
+        with open("user.csv", "w", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow([1, "Parikshit", "11", "admin"])
+        print("Default admin created.")
+
+
 def get_next_user_id():
 
     if not os.path.exists("user.csv") or os.stat("user.csv").st_size == 0:
@@ -10,7 +18,7 @@ def get_next_user_id():
         rows = list(csv.reader(file))
         last_id = int(rows[-1][0])
         return last_id + 1
-
+    
 
 def create_user():
     with open("user.csv", "a", newline='') as file:
@@ -22,6 +30,7 @@ def create_user():
         csvw = csv.writer(file)
         csvw.writerow(row)
     print("\n user created successfully...!!!\n")
+
 
 def login():
     with open("user.csv", "r") as file:
@@ -38,16 +47,33 @@ def login():
                 
         print("invalid username or password")
         return None,None
+    
 
 def main():
     user_id, role = login()
     if user_id is None:
         return 
     if role == "admin":
-        admin_menu(user_id)
+        while True:
+            print('Welcome User to Anilist')
+            print("""MENU
+            1.Admin Menu
+            2.User Menu
+            3.Exit
+            """)
+            choice=int(input('choose an option: '))
+
+            if choice==1:
+                admin_menu(user_id)
+
+            elif choice==2:
+                user_menu(user_id)
+            else:
+                break
     else:
         user_menu(user_id)
 
+    
 def get_next_watch_id():
     if not os.path.exists("watchlist.csv") or os.stat("watchlist.csv").st_size == 0:
         return 1
@@ -55,7 +81,7 @@ def get_next_watch_id():
     with open("watchlist.csv", "r") as file:
         rows = list(csv.reader(file))
         return int(rows[-1][0]) + 1
-
+    
 
 def add_show(user_id):
     with open("watchlist.csv", "a", newline='') as file:
@@ -67,6 +93,7 @@ def add_show(user_id):
         csvw = csv.writer(file)
         csvw.writerow(row)
     print("\n show added successfully.\n")
+
 
 def view_shows(user_id):
     search_show = input('enter show name = ')
@@ -80,6 +107,8 @@ def view_shows(user_id):
         if not found:
             print('\nNo show record found.')
 
+
+
 def display_all_shows(user_id):
     with open('watchlist.csv','r') as file:
         all_data=csv.reader(file)
@@ -87,6 +116,7 @@ def display_all_shows(user_id):
         for show in all_data:
             print('|\t',show[2],'\t|\t',show[3],'\t|\t',show[4],'\t|')
         print('\nAll Shows Records printed succesfully.\n')
+
 
 def update_show(user_id):
     search_show = input("enter show name to update: ")
@@ -117,6 +147,8 @@ def update_show(user_id):
 
     print("Show updated successfully.")
 
+
+
 def delete_show(user_id):
     search_show = input("enter show name to delete: ")
     remaining_rows = []
@@ -137,7 +169,8 @@ def delete_show(user_id):
         csv.writer(file).writerows(remaining_rows)
     print("Show deleted successfully.")
 
-                
+
+
 def user_menu(user_id):
     while True:
         print('Welcome User to Anilist')
@@ -173,6 +206,7 @@ def user_menu(user_id):
     print('thank you, see you soon.')
 
 
+
 def search_user():
     search_id = input('enter user id = ')
     with open('user.csv','r') as file:
@@ -183,7 +217,8 @@ def search_user():
                 found = True
                 print('User_ID =', row[0],'\nUser =',row[1],'\nRole =', row[3])
         if not found:
-            print('\nNo show record found.')
+            print('\nNo user record found.')
+
 
 def display_all_users():
     with open('user.csv','r') as file:
@@ -193,9 +228,12 @@ def display_all_users():
             print('|\t',user[0],'\t|\t',user[1],'\t|\t',user[3],'\t|')
         print('\nAll Users Records printed succesfully.\n')
 
+
+
+
 def change_user_role():
     user_id = input("enter user id: ")
-    if user_id == "3":
+    if user_id == "1":
         print("Cannot change role of permanent admin.")
         return
     updated_rows = []
@@ -223,7 +261,7 @@ def change_user_role():
 
 def delete_user():
     search_user = input("enter user id to delete: ")
-    if search_user == "3":
+    if search_user == "1":
         print("Cannot delete permanent admin.")
         return
 
@@ -244,8 +282,6 @@ def delete_user():
     with open("user.csv", "w", newline="") as file:
         csv.writer(file).writerows(remaining_rows)
     print("User deleted successfully.")
-
-
 
 
 def admin_menu(user_id):
@@ -281,5 +317,8 @@ def admin_menu(user_id):
         if repeat=='N':
             break
     print('thank you, see you soon.')
+
+
+initialize_admin()
 
 main()
